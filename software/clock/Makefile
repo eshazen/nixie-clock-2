@@ -6,7 +6,11 @@ MCU = attiny861a
 
 F_OSC = 8000000
 
+# time set only by UART
 EXTRAOPT = -DSCRAMBLE -DUART_SET
+# time only set via on-board interrupt
+# EXTRAOPT = -DSCRAMBLE -DINTERNAL_TIME
+
 # EXTRAOPT = -DTESTDPY -DSCRAMBLE
 # EXTRAOPT = -DTESTDPY
 

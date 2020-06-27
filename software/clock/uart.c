@@ -4,6 +4,7 @@
 void uart_init() {
   UART_OUT_PORT |= UART_OUT_VALUE;
   bit = 0;
+  rx_valid = 0;
 }
 
 void uart_putc( char c)
@@ -44,6 +45,7 @@ void uart_tick() {
     if( rx_bit == 0x400) {
       rx_valid = (rx_word >> 1) & 0xff;
       rx_bit = 0;
+      // re-enable pin change interrupt
       GIMSK |= _BV(PCIE1);
     }
   }

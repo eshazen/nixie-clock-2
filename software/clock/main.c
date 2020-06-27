@@ -1,8 +1,13 @@
 // Nixie Clock II
 //
 // 1Hz timer interrupts
+// pin-change interrupt on PA5 starts timer-driven UART
 // set time via UART at 9600 baud   "*hhmm$"
 //
+// boot-up rubbish out of ESP8266 seems to crash our cheezy UART,
+// so delay 30s at power-up before enabling
+//
+// 
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -12,8 +17,9 @@
 volatile uint8_t sec, min, min10, hr, hr10;
 
 // counts at TIMER_HZ rate
-volatile uint8_t tick125;
-volatile uint16_t tick1k;	/* 1kHz counter */
+volatile uint16_t tick1k;	/* 9600Hz counter */
+volatile uint8_t tick1s;	/* startup 1Hz counter */
+volatile uint8_t ready;
 
 #include "timeofday.h"
 #include "clock.h"
@@ -31,19 +37,15 @@ ISR( PCINT_vect)
   TCNT0H = CNT_HALF_HI;
   TCNT0L = CNT_HALF_LOW;
   uart_rx_start();
-  //  PORTB ^= nLED;		/* toggle LED */
 }
 
-// interrupt at 125kHz
+// interrupt at 9600Hz
 ISR( TIMER0_OVF_vect)		// timer1 ISR
 {
   TCNT0H = CNT_HI;
   TCNT0L = CNT_LOW;
   uart_tick();
-  //  if( ++tick125 == 125) {
-  //    tick125 = 0;
-    ++tick1k;
-    //  }
+  ++tick1k;
 }
 
 uint8_t send = 32;
@@ -60,10 +62,9 @@ int main (void)
   uint16_t i;
   
   while( 1) {
-
     
 #ifdef UART_SET
-    if( send = uart_getc()) {
+    if( ready && (send = uart_getc())) {
       if( send == '*') {
 	p = buff;
       } else if( send == '$') {
@@ -80,12 +81,27 @@ int main (void)
 #endif
 
     if( tick1k >= 9600) {
-      PORTB ^= nLED;		/* toggle LED */
       tick1k = 0;
+      PORTB ^= nLED;		/* toggle LED */
+
+      // increment tick1s until 1 minute has passed, then
+      // initialize UART
+      if( !ready) {
+	++tick1s;
+	if( tick1s == 30) {	/* power up delay 1 minute */
+	  ready = 1;
+	  GIMSK = _BV(PCIE1);		/* enable UART pin change interrupt */
+	}
+	// display count-down time
+	min10 = tick1s / 10;
+	min = tick1s % 10;
+      }
+
 #ifdef TESTDPY
       inc_min();
       inc_hr();
-#else	
+#endif
+#ifdef INTERNAL_TIME
       inc_time();
 #endif
       set_digits( hr10, hr, min10, min);
@@ -112,21 +128,24 @@ void ioinit() {
 
   TCCR0A = 0x80;		/* set only TCW0 for 16 bits */
   TCCR0B = CNT_PS_CODE;		/* set clock prescale */
-  TIMSK = (1 << TOIE0);
+  TIMSK = (1 << TOIE0);		/* enable timer interrupt */
 
   /* reset system clock divider to 1 so 8MHz clock */
   CLKPR = _BV(CLKPCE);
   CLKPR = 0;
 
   /* enable interrupt on PA5 (PCINT5) */
-  PCMSK0 = _BV(PCINT5);
+  uart_init();
+  //  don't enable PC interrupt until ready
+  //  PCMSK0 = _BV(PCINT5);
   PCMSK1 = 0;
-  GIMSK = _BV(PCIE1);
 
   /* try fiddling with oscillator calibration */
   /* this seems about right */
   OSCCAL = 0x8d;
 
-  uart_init();
+  ready = 0;
+  // enable UART (pin change) interrupt mask
+  PCMSK0 = _BV(PCINT5);
 }
 
