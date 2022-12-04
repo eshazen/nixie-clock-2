@@ -22,3 +22,17 @@ C code for ATTiny861A to drive the clock display
 ```software/ESP8266```
 
 Very simple NTP client to get the time via WiFi and send to the ATTiny
+
+## Notes
+
+On power-up/reboot, the ESP module transmits a blast of serial stuff
+at a high bit rate.  This crashes the AVR code.  There's a 30 sec
+timer which runs before enabling serial, but apparently the power-up
+reset of the ESP sometimes fails.  So for now a reliable
+power-up procedure:
+
+* Apply AC power
+* Press the reset button on the ESP fairly promptly
+
+Then after 30s timeout things should come up OK.  I'd try to fix
+this but can't easily locate my programming adapter for the AVR.
