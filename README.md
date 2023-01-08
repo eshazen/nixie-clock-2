@@ -23,11 +23,17 @@ C code for ATTiny861A to drive the clock display
 
 Very simple NTP client to get the time via WiFi and send to the ATTiny
 
-## Notes
+## Plans
 
 Thinking of building one for the Kitchen.  Instead of ESP8622, thinking
 of one of many DS3231 I2C RTC modules.  This could use the header wires
-now used for the ESP
+now used for the ESP.
+
+For power, Triad FD4-10 has a dual 115V primary and 10VCT secondary.
+Use a full-wave rectifier or bridge plus 7805 for 5V and the second primary
+to generate the HV.  Also need a fuse/holder.
+
+## Notes
 
 On power-up/reboot, the ESP module transmits a blast of serial stuff
 at a high bit rate.  This crashes the AVR code.  There's a 30 sec
