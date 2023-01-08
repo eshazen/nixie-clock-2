@@ -25,6 +25,10 @@ Very simple NTP client to get the time via WiFi and send to the ATTiny
 
 ## Notes
 
+Thinking of building one for the Kitchen.  Instead of ESP8622, thinking
+of one of many DS3231 I2C RTC modules.  This could use the header wires
+now used for the ESP
+
 On power-up/reboot, the ESP module transmits a blast of serial stuff
 at a high bit rate.  This crashes the AVR code.  There's a 30 sec
 timer which runs before enabling serial, but apparently the power-up
