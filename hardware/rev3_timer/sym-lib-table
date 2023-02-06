@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "my_nixies")(type "KiCad")(uri "${KIPRJMOD}/my_nixies.kicad_sym")(options "")(descr ""))
+  (lib (name "my_misc")(type "KiCad")(uri "${KIPRJMOD}/my_misc.kicad_sym")(options "")(descr ""))
+  (lib (name "sound_gen")(type "KiCad")(uri "${KIPRJMOD}/sound_gen.kicad_sym")(options "")(descr ""))
+)
