@@ -19,4 +19,9 @@
   (pad "2" thru_hole circle (at 2.286 -0.2032) (size 1.524 1.524) (drill 0.889) (layers *.Cu *.Mask) (tstamp 2e4a17a8-13df-4c9a-b6fb-eb161d2ef890))
   (pad "3" thru_hole circle (at -2.6162 2.5908) (size 1.524 1.524) (drill 1.0922) (layers *.Cu *.Mask) (tstamp 8afba45b-c1c8-4bee-b6fd-2f13e5e972e8))
   (pad "4" thru_hole circle (at 4.8768 -2.6924) (size 1.524 1.524) (drill 1.0922) (layers *.Cu *.Mask) (tstamp adfe7316-17d3-47d8-a048-7152e6dd8fee))
+  (model "/home/hazen/work/nixie-clock-2/3D/rubber-button-Group.step"
+    (offset (xyz 1.27 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0))
+  )
 )
